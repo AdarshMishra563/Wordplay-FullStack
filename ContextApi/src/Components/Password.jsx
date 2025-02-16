@@ -18,7 +18,7 @@ const togglePasswordVisibility = () => {
 const handlepass=async (e)=>{
     e.preventDefault();
     try{
-        const data=await axios.get(`http://localhost:3000/api/auth/get/${email}`);
+        const data=await axios.get(`https://game-full-stack.onrender.com/api/auth/get/${email}`);
        if(data.data.status){
         
         setchange(true);
@@ -36,7 +36,7 @@ const handlepass=async (e)=>{
 const changepass= async (e)=>{
     e.preventDefault();
     try{
-const changepassword=await axios.put(`http://localhost:3000/api/auth/password/${email}`,{password})
+const changepassword=await axios.put(`https://game-full-stack.onrender.com/api/auth/password/${email}`,{password})
 
 
 console.log(changepassword);
