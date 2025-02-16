@@ -13,7 +13,7 @@ const Signup = () => {
     const handleSignup = async (e) => {
         e.preventDefault();
         try {
-            await axios.post("http://localhost:3000/api/auth/register", { username, email, password });
+            await axios.post("https://game-full-stack.onrender.com/api/auth/register", { username, email, password });
             alert("Signup successful! Please login.");
             navigate("/");
         } catch (error) {
