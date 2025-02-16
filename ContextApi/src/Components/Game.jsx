@@ -44,7 +44,7 @@ useEffect(()=>{
     const sortedplayers=array.sort((a, b) => b.wins - a.wins);
     console.log(sortedplayers);
     setrank(sortedplayers);
-  ;
+  
 
 
 })
