@@ -1,15 +1,32 @@
-const mongoose=require('mongoose');
+
+const mongoose=require('mongoose')
 const express=require('express');
+const connecttodb=require('./routes/db');
+const cors = require('cors');
+
 const Model=require('./routes/user')
-const db=require('./routes/db')
-db();
-const cors=require('cors')
+connecttodb();
 const app=express();
-app.use(cors())
+app.use(cors());
 app.use(express.json());
-app.post('/',async (req,res)=>{
-    const {username,password}=req.body;
-    const data=await Model.findOne({$or:[{username,password}]});
-    res.status(200).json({data})
+const authRoutes=require('./routes/auth-router')
+app.use("/api/auth",authRoutes)
+
+const PORT=  3000;
+  
+app.get('/',async (req,res)=>{
+   
+ 
+    const result =  await Model.find();
+    
+    console.log(result)
+    res.status(200).json({ data: result, message: 'Data received successfully' });
+
 })
-    app.listen(5500)
+
+
+
+
+
+
+app.listen(PORT,console.log(`started at port${PORT}`))
