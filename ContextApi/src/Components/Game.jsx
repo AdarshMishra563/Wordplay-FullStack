@@ -31,7 +31,7 @@ useEffect(()=>{
         try {
           const decoded = jwtDecode(token);
           
-          return decoded; // Returns user data like { id: '123', email: 'user@example.com', exp: 1712134123 }
+          return decoded;
         } catch (error) {
           console.error("Invalid Token", error);
           return null;
@@ -44,7 +44,7 @@ useEffect(()=>{
     const incrementWinCount = async (_id) => {
         try {
     
-            const response = await axios.post("http://localhost:3000/api/auth/start", { _id });
+            const response = await axios.post("https://game-full-stack.onrender.com/api/auth/start", { _id });
             setid(response.data)
             console.log("Win count updated:", response.data);
         } catch (error) {
@@ -60,7 +60,7 @@ useEffect(()=>{
         try {
           const decoded = jwtDecode(token);
           
-          return decoded; // Returns user data like { id: '123', email: 'user@example.com', exp: 1712134123 }
+          return decoded;
         } catch (error) {
           console.error("Invalid Token", error);
           return null;
@@ -73,7 +73,7 @@ useEffect(()=>{
     const incrementWinCount = async (_id) => {
         try {
     
-            const response = await axios.post("http://localhost:3000/api/auth/userwin", { _id });
+            const response = await axios.post("https://game-full-stack.onrender.com/api/auth/userwin", { _id });
             setid(response.data)
             console.log("Win count updated:", response.data);
         } catch (error) {
