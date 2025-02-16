@@ -212,7 +212,7 @@ return(<>
   <ul>
     {rank.map((player, index) => (
       <li key={index} className="border border-gray-800 rounded-md flex justify-between">
-        <span className=" flex  text-xl text-black ">{index}. { player.username}  :      {  player.wins}<FaTrophy className="mt-1 ml-1"/> </span>
+        <span className=" flex  text-xl text-black ">{index+1}. { player.username}  :      {  player.wins}<FaTrophy className="mt-1 ml-1"/> </span>
         
   
       </li>
