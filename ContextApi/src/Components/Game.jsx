@@ -47,7 +47,7 @@ useEffect(()=>{
   ;
 
 
-},[gameover,count])
+})
 
   
     const getUserFromToken = (token) => {
