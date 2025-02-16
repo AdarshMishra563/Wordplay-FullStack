@@ -12,7 +12,7 @@ import Signup from './Components/Signup';
 import Dashboard from './Components/Dashboard';
 import { useForm } from "react-hook-form";
 import Password from './Components/Password';
-import Game from './Components/game';
+import Game from './Components/Game';
 const LazyComponent = React.lazy(() => import('./Components/Profile'));
 const api=async()=>{
   const response=await axios.get(`http://localhost:5500/`)
