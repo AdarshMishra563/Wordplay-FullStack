@@ -1,7 +1,7 @@
 import React, {  useEffect, useState } from "react";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
-
+import { FaTrophy } from "react-icons/fa";
 
 
 const api= async()=>{
@@ -25,13 +25,36 @@ const [currentguess,setcurrentguess]=useState('')
 const[info,setinfo]=useState({username:"",wins:""})
 const [id,setid]=useState({wins:0,data:[{username:"xxxx"}]})
 const[count,setcount]=useState(0);
+const [rank,setrank]=useState([])
+const getrank=async ()=>{
+  try{ 
+    const res= await axios.get('https://game-full-stack.onrender.com');
+
+return res;
+  }catch(err){
+    console.log(err)
+  }
+}
+  
+
+
+
 useEffect(()=>{
-    
+  getrank().then((data)=>{ const array =data.data.data;
+    const sortedplayers=array.sort((a, b) => b.wins - a.wins);
+    console.log(sortedplayers);
+    setrank(sortedplayers);
+  ;
+
+
+},[gameover,count])
+
+  
     const getUserFromToken = (token) => {
         try {
           const decoded = jwtDecode(token);
           
-          return decoded;
+          return decoded; // Returns user data like { id: '123', email: 'user@example.com', exp: 1712134123 }
         } catch (error) {
           console.error("Invalid Token", error);
           return null;
@@ -44,7 +67,7 @@ useEffect(()=>{
     const incrementWinCount = async (_id) => {
         try {
     
-            const response = await axios.post("https://game-full-stack.onrender.com/api/auth/start", { _id });
+            const response = await axios.post("http://localhost:3000/api/auth/start", { _id });
             setid(response.data)
             console.log("Win count updated:", response.data);
         } catch (error) {
@@ -60,7 +83,7 @@ useEffect(()=>{
         try {
           const decoded = jwtDecode(token);
           
-          return decoded;
+          return decoded; // Returns user data like { id: '123', email: 'user@example.com', exp: 1712134123 }
         } catch (error) {
           console.error("Invalid Token", error);
           return null;
@@ -73,7 +96,7 @@ useEffect(()=>{
     const incrementWinCount = async (_id) => {
         try {
     
-            const response = await axios.post("https://game-full-stack.onrender.com/api/auth/userwin", { _id });
+            const response = await axios.post("http://localhost:3000/api/auth/userwin", { _id });
             setid(response.data)
             console.log("Win count updated:", response.data);
         } catch (error) {
@@ -172,9 +195,10 @@ return(<>
 
 
 <div className="w-full  flex text-center text-2xl text-white capitalize  h-16 justify-center bg-gray-800">!!      {id.data[0].username}  <p className="ml-4 mr-8 text-red-400">    Wins : {id.data[0].wins}</p>   !!       </div>
+
 <div key={"hh"} className=" bg-gray-200 h-screen place-items-center text-3xl  gap-[5px]">
   !!WordPlay!!
-  {
+ <div className="relative "> {
     guesses.map((guess,i)=>{
       const isCurrentguess=i===guesses.findIndex(v=>v==null)
       return(<Line className=""
@@ -183,7 +207,18 @@ return(<>
         words={words}
         />)
     })
-  }
+  }</div><div className=" absolute  right-0 top-[38%] transform -translate-y-1/2 w-[20%] h-64 bg-gray-300 flex items-center justify-center "> <div className="w-full max-w-md mx-auto p-2 bg-gray-200 border-2 border-gray-400 shadow-md rounded-lg h-[400px] overflow-y-auto">
+  <h2 className="text-black font-bold  text-center mb-4">Leaderboard</h2>
+  <ul>
+    {rank.map((player, index) => (
+      <li key={index} className="border border-gray-800 rounded-md flex justify-between">
+        <span className=" flex  text-xl text-black ">{player.username}  :      {  player.wins}<FaTrophy className="mt-1 ml-1"/> </span>
+        
+  
+      </li>
+    ))}
+  </ul>
+</div></div>
 <Win gameover={gameover} words={words}
 />
   </div> </>
