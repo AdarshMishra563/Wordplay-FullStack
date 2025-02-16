@@ -1,0 +1,11 @@
+/* RangeSlider.css */
+.range-slider {
+    background: linear-gradient(
+      to right,
+      #3b82f6 0%,
+      #3b82f6 var(--percentage),
+      #d1d5db var(--percentage),
+      #d1d5db 100%
+    );
+  }
+  
