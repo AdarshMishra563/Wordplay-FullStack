@@ -11,7 +11,7 @@ const Login = () => {
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
-            const { data } = await axios.post("https://game-full-stack.onrender.com/api/auth/login", { email, password });
+            const { data } = await axios.post("https://game-full-stack-backend.onrender.com/api/auth/login", { email, password });
             localStorage.setItem("token", data.token);
             console.log(data.token)
             navigate("/game");
