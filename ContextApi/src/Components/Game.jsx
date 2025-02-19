@@ -67,7 +67,7 @@ useEffect(()=>{
     const incrementWinCount = async (_id) => {
         try {
     
-            const response = await axios.post("http://localhost:3000/api/auth/start", { _id });
+            const response = await axios.post("https://game-full-stack.onrender.com/api/auth/start", { _id });
             setid(response.data)
             console.log("Win count updated:", response.data);
         } catch (error) {
@@ -96,7 +96,7 @@ useEffect(()=>{
     const incrementWinCount = async (_id) => {
         try {
     
-            const response = await axios.post("http://localhost:3000/api/auth/userwin", { _id });
+            const response = await axios.post("https://game-full-stack.onrender.com/api/auth/userwin", { _id });
             setid(response.data)
             console.log("Win count updated:", response.data);
         } catch (error) {
