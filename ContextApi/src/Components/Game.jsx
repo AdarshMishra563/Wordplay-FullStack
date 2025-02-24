@@ -45,7 +45,7 @@ return res;
 useEffect(()=>{
   getrank().then((data)=>{ const array =data.data.data;
     const sortedplayers=array.sort((a, b) => b.wins - a.wins);
-    console.log(sortedplayers);
+    
     setrank(sortedplayers);
   
 
@@ -72,7 +72,7 @@ useEffect(()=>{
     
             const response = await axios.post("https://game-full-stack.onrender.com/api/auth/start", { _id });
             setid(response.data)
-            console.log("Win count updated:", response.data);
+            
         } catch (error) {
             console.error("Error updating win count:", error);
         }
@@ -101,7 +101,7 @@ useEffect(()=>{
     
             const response = await axios.post("https://game-full-stack.onrender.com/api/auth/userwin", { _id });
             setid(response.data)
-            console.log("Win count updated:", response.data);
+            
         } catch (error) {
             console.error("Error updating win count:", error);
         }
@@ -113,9 +113,7 @@ useEffect(()=>{
     
 
       
-      // Example usage
       
-       // Fetch token from localStorage or cookies
        
        
       
@@ -188,7 +186,7 @@ return ()=>window.removeEventListener('keydown',handletype)
  useEffect(()=>{api().then((i)=>{
   const randomword=i[Math.floor(Math.random()*150)]
 setwords(randomword)
-console.log(randomword)
+
  }
 )
 
