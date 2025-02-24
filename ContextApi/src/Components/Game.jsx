@@ -2,6 +2,8 @@ import React, {  useEffect, useState } from "react";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import { FaTrophy } from "react-icons/fa";
+import {useNavigate} from "react-router-dom";
+
 
 
 const api= async()=>{
@@ -15,6 +17,7 @@ const api= async()=>{
   
 
 export default   function Game(){
+  const navigate=useNavigate();
 
 const [name,setname]=useState("xxx")
 const [wins,setwins]=useState(0)
@@ -190,11 +193,16 @@ console.log(randomword)
 )
 
 },[])
+   const handleRefresh = () => {
+    navigate(0);
+  
+}
 
 return(<>
 
 
 <div className="w-full  flex text-center text-2xl text-white capitalize  h-16 justify-center bg-gray-800">!!      {id.data[0].username}  <p className="ml-4 mr-8 text-red-400">    Wins : {id.data[0].wins}</p>   !!       </div>
+  <div className="bg-gray-200"> <button className="border-2 border-black rounded-md bg-blue-200" onClick={handleRefresh} >Restart Game</button></div>
 
 <div key={"hh"} className=" bg-gray-200 h-screen place-items-center text-3xl  gap-[5px]">
   !!WordPlay!!
