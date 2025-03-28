@@ -165,11 +165,10 @@ if(isLetter){
 setcurrentguess(o=>{ return o+e.key})}
 
 
-if(e.key==='Backspace'){
-  setcurrentguess(currentguess.substring(0, currentguess.length -1))
-  return 
+if (e.key === 'Backspace') {
+  setcurrentguess(prev => prev.slice(0, -1)); 
+  return;
 }
-
 
 
 }
