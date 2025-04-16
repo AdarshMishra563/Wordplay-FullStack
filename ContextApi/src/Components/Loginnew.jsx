@@ -20,7 +20,7 @@ const Login = () => {
         } catch (error) {
             setspan(true);
         } finally {
-            setLoading(false); // Stop loading
+            setLoading(false); 
         }
     };
 
