@@ -272,7 +272,7 @@ export default function Game() {
       </div>
 
       <div className="flex flex-col items-center mt-8">
-        <h1 className="text-4xl font-bold text-gray-800 mb-8">WordPlay</h1>
+        <h1 className="text-4xl font-bold text-gray-800 mb-4">WordPlay</h1>
         
         {showLeaderboard && (
           <div className="w-full max-w-md mb-8 bg-gray-100 border-2 border-gray-400 shadow-lg rounded-lg overflow-hidden">
