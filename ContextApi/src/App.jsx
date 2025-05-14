@@ -70,6 +70,7 @@ export default function App(){
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path='/password' element={<Password/>}/>
             <Route path='/game' element={<Game/>}/>
+            
         </Routes>
     </Router>
 );

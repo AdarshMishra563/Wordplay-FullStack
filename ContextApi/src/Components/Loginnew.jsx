@@ -4,11 +4,13 @@ import { useNavigate, Link } from "react-router-dom";
 import '../App.css'
 import { motion } from 'framer-motion';
 import AnimatedText from "./Animated.jsx";
+import { FaEye,FaEyeSlash } from "react-icons/fa";
 const Login = () => {
     const [span, setspan] = useState(false);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
+    const [hide,sethide]=useState(false);
     const navigate = useNavigate();
 
     useEffect(()=>{const data=localStorage.getItem("token");
@@ -89,13 +91,21 @@ const text="Login"
                     onChange={(e) => setEmail(e.target.value)}
                     required
                 />
-                <input
-                    type="password"
+               <div className="relative">
+                 <input
+                    type={!hide?"password":"text"}
                     placeholder="Password"
                     className="block p-2 mb-2 w-full border bg-gradient-to-br to-gray-300 from-gray-100 "
                     onChange={(e) => setPassword(e.target.value)}
                     required
                 />
+                <div onClick={()=>{sethide(!hide)}} className="absolute top-3 right-2">{
+                
+                !hide?<FaEye size={20}/>:<FaEyeSlash size={20}/>
+                }
+
+               </div>
+               </div>
 
                 <button
                     type="submit"
