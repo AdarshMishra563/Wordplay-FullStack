@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import { FaTrophy, FaCrown, FaChevronDown, FaChevronUp, FaTimes, FaQuestionCircle, FaRedo } from "react-icons/fa";
@@ -33,6 +33,10 @@ export default function Game() {
       navigate("/")
     }
   },[])
+ const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/");
+  };
 
   const getrank = async () => {
     try {
@@ -109,41 +113,42 @@ export default function Game() {
   }, [gameover]);
 
   useEffect(() => {
-    const handletype = (e) => {
-      if (gameover || allGuessesUsed) {
-        return;
-      }
+   const handletype = (e) => {
+  if (gameover || allGuessesUsed) {
+    return;
+  }
+ if (['Enter', 'Backspace'].includes(e.key)) {
+    e.preventDefault();}
+  if (e.key === 'Enter') {
+    if (currentguess.length !== 5) {
+      return;
+    }
 
-      if (e.key === 'Enter') {
-        if (currentguess.length !== 5) {
-          return;
-        }
+    const newGuesses = [...guesses];
+    newGuesses[guesses.findIndex(v => v == null)] = currentguess;
+    setguesses(newGuesses);
+    setcurrentguess('');
 
-        const newGuesses = [...guesses];
-        newGuesses[guesses.findIndex(v => v == null)] = currentguess;
-        setguesses(newGuesses);
-        setcurrentguess('');
+    const isCorrect = words === currentguess;
+    if (isCorrect) {
+      setgameover(true);
+    }
+    return;
+  }
 
-        const isCorrect = words === currentguess;
-        if (isCorrect) {
-          setgameover(true);
-        }
-      }
+  if (e.key === 'Backspace') {
+    setcurrentguess(prev => prev.slice(0, -1));
+    return;
+  }
 
-      if (currentguess.length >= 5) {
-        return;
-      }
-      const isLetter = e.key.match(/^[a-z]{1}$/) != null;
-      if (isLetter) {
-        setcurrentguess(o => { return o + e.key });
-      }
-
-      if (e.key === 'Backspace') {
-        setcurrentguess(prev => prev.slice(0, -1));
-        return;
-      }
-    };
-
+  
+  if (currentguess.length < 5) {
+    const isLetter = e.key.match(/^[a-z]{1}$/i) != null; 
+    if (isLetter) {
+      setcurrentguess(prev => prev + e.key.toLowerCase());
+    }
+  }
+};
     window.addEventListener('keydown', handletype);
     return () => window.removeEventListener('keydown', handletype);
   }, [currentguess, gameover, words, guesses, allGuessesUsed]);
@@ -160,35 +165,51 @@ export default function Game() {
     navigate(0);
   };
 
-  const handleKeyClick = (key) => {
-    if (gameover || allGuessesUsed) return;
-    
-    if (key === 'ENTER') {
-      if (currentguess.length === 5) {
-        const newGuesses = [...guesses];
-        newGuesses[guesses.findIndex(v => v == null)] = currentguess;
-        setguesses(newGuesses);
-        setcurrentguess('');
+ const handleKeyClick = (key) => {
+  if (gameover || allGuessesUsed) return;
+  
+  if (key === 'ENTER') {
+    if (currentguess.length === 5) {
+      const newGuesses = [...guesses];
+      newGuesses[guesses.findIndex(v => v == null)] = currentguess;
+      setguesses(newGuesses);
+      setcurrentguess('');
 
-        const isCorrect = words === currentguess;
-        if (isCorrect) {
-          setgameover(true);
-        }
+      const isCorrect = words === currentguess;
+      if (isCorrect) {
+        setgameover(true);
       }
-    } else if (key === 'BACK') {
-      setcurrentguess(prev => prev.slice(0, -1));
-    } else if (currentguess.length < 5) {
-      setcurrentguess(prev => prev + key.toLowerCase());
     }
-  };
-
+  } else if (key === 'BACK') {
+    setcurrentguess(prev => prev.slice(0, -1));
+  } else if (currentguess.length < 5) {
+    setcurrentguess(prev => prev + key.toLowerCase());
+  }
+};
   const closeLossModal = () => {
     setShowLossModal(false);
   };
+  const inputRef = useRef(null);
+
+
+useEffect(() => {
+  inputRef.current?.focus();
+}, []);
+
+ 
+
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-200 to-gray-900">
-      
+    <div className="min-h-screen bg-gradient-to-b to-gray-300 from-gray-900">
+      <input
+  ref={inputRef}
+  type="text"
+  className="opacity-0 absolute"
+  value={currentguess}
+  onChange={() => {}}
+  onKeyDown={(e) => handletype(e)}
+/>
+
       {showLossModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-gray-800 p-6 rounded-lg shadow-xl max-w-md w-full">
@@ -248,41 +269,48 @@ export default function Game() {
         </div>
       )}
 
-      <div className="w-full flex text-center text-2xl text-white capitalize h-16 justify-center bg-gray-800 items-center">
-        <div className="flex items-center">
-          <FaCrown className="text-yellow-400 mr-2" />
-          {id.data[0].username} 
-          <p className="ml-4 mr-8 text-red-400">Wins: {id.data[0].wins}</p>
-        </div>
-      </div>
+        <div className="w-full flex justify-between items-center px-4 py-3 bg-gray-800 text-white">
+  
+  <div className="flex items-center text-xl capitalize">
+    <FaCrown className="text-yellow-400 mr-2" />
+    {id.data[0].username} 
+    <p className="ml-4 text-red-400">Wins: {id.data[0].wins}</p>
+  </div>
 
-      <div className="flex justify-between items-center px-4 mt-4">
-        <button 
-          onClick={() => setShowHowToPlay(true)}
-          className="flex items-center bg-gray-700 text-white px-3 py-2 rounded-md hover:bg-gray-600"
-        >
-          <FaQuestionCircle className="mr-2" /> How to Play
-        </button>
-        
-        <div className="flex space-x-4">
-          <button 
-            className="flex items-center bg-gray-700 text-white px-3 py-2 rounded-md hover:bg-gray-600"
-            onClick={() => setShowLeaderboard(!showLeaderboard)}
-          >
-            {showLeaderboard ? <FaChevronUp className="mr-2" /> : <FaChevronDown className="mr-2" />}
-            Leaderboard
-          </button>
-          <button 
-            className="flex items-center bg-blue-600 text-white px-3 py-2 rounded-md hover:bg-blue-700"
-            onClick={handleRefresh}
-          >
-            <FaRedo className="mr-2" /> Restart
-          </button>
-        </div>
-      </div>
-
-      <div className="flex flex-col items-center mt-8">
-        <h1 className="text-4xl font-bold text-gray-800 mb-4">WordPlay</h1>
+ 
+  <div className="flex items-center space-x-4">
+    <button 
+      onClick={() => setShowHowToPlay(true)}
+      className="flex items-center bg-gray-700 text-white px-3 py-2 rounded-md hover:bg-gray-600 shadow-sm hover:shadow-md transition-shadow"
+    >
+      <FaQuestionCircle className="mr-2" /> How to Play
+    </button>
+    
+    <button 
+      className="flex items-center bg-gray-700 text-white px-3 py-2 rounded-md hover:bg-gray-600 shadow-sm hover:shadow-md transition-shadow"
+      onClick={() => setShowLeaderboard(!showLeaderboard)}
+    >
+      {showLeaderboard ? <FaChevronUp className="mr-2" /> : <FaChevronDown className="mr-2" />}
+      Leaderboard
+    </button>
+    
+    <button 
+      className="flex items-center bg-blue-600 text-white px-3 py-2 rounded-md hover:bg-blue-700 shadow-sm hover:shadow-md transition-shadow"
+      onClick={handleRefresh}
+    >
+      <FaRedo className="mr-2" /> Restart
+    </button>
+    
+    <button 
+      onClick={handleLogout}
+      className="bg-red-600 hover:bg-red-700 text-white font-bold px-3 py-2 rounded-md text-sm shadow-sm hover:shadow-md transition-shadow"
+    >
+      Logout
+    </button>
+  </div>
+</div>
+      <div className="flex flex-col items-center mt-6">
+        <h1 className="text-4xl font-bold text-gray-400 mb-4">WordPlay</h1>
         
         {showLeaderboard && (
           <div className="w-full max-w-md mb-8 bg-gray-100 border-2 border-gray-400 shadow-lg rounded-lg overflow-hidden">
@@ -391,7 +419,7 @@ function Line({ guess, isfinal, words }) {
   const boxes = [];
   for (let i = 0; i < 5; i++) {
     const char = guess[i];
-    let className = "flex items-center justify-center w-12 h-12 border-2 font-bold text-xl ";
+    let className = "flex items-center  shadow-sm shadow-purple-300 rounded-md justify-center w-12 h-12 border-2 font-bold text-xl ";
     
     if (isfinal) {
       if (char === words[i]) {
@@ -412,13 +440,13 @@ function Line({ guess, isfinal, words }) {
     );
   }
 
-  return <div className="my-1 flex gap-2">{boxes}</div>;
+  return <div className="my-1  flex gap-2">{boxes}</div>;
 }
 
 function Win({ gameover, words }) {
   if (gameover) {
     return (
-      <div className="mt-6 p-4 bg-green-600 text-white rounded-lg text-2xl font-bold animate-bounce">
+      <div className="mt-6 p-4 absolute bg-green-600 text-white rounded-lg text-2xl font-bold animate-bounce">
         You Win! The word was: {words.toUpperCase()}
       </div>
     );
