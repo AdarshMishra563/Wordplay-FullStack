@@ -24,6 +24,16 @@ export default function Game() {
   const [allGuessesUsed, setAllGuessesUsed] = useState(false);
   const [showHowToPlay, setShowHowToPlay] = useState(false);
 
+
+  useEffect(()=>{
+
+    const token = localStorage.getItem("token");
+
+    if(!token){
+      navigate("/")
+    }
+  },[])
+
   const getrank = async () => {
     try {
       const res = await axios.get('https://game-full-stack.onrender.com');
