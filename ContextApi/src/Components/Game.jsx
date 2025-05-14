@@ -3,18 +3,7 @@ import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import { FaTrophy, FaCrown, FaChevronDown, FaChevronUp, FaTimes, FaQuestionCircle, FaRedo } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-const fiveLetterWords = [
-  "apple", "brain", "crisp", "dwarf", "eagle", 
-  "flame", "globe", "happy", "igloo", "jolly",
-  "koala", "lemon", "mango", "noble", "olive",
-  "peach", "queen", "robin", "sunny", "tiger",
-  "umbra", "vivid", "whale", "xenon", "yacht",
-  "zebra", "acute", "baker", "crane", "dance",
-  "earth", "fable", "grape", "haste", "inbox",
-  "jumpy", "kneel", "latch", "mirth", "nymph",
-  "otter", "prism", "quilt", "rover", "swoop",
-  "tulip", "udder", "vowel", "wrist", "xerox"
-];
+import fiveLetterWords from "../assets/words";
 
 
 const randomlocal = fiveLetterWords[Math.floor(Math.random() * fiveLetterWords.length)];
@@ -169,15 +158,18 @@ export default function Game() {
   }, [currentguess, gameover, words, guesses, allGuessesUsed]);
 
   useEffect(() => {
+
+    setwords(randomlocal);
+    
     api().then((i) => {
       const randomword = i[Math.floor(Math.random() * 150)];
-      setwords(randomword)
+     
 
      
       
-    }).catch(() => {
+    }).catch((err) => {
       
-     setwords(randomlocal)
+     console.log(err)
 
     });;
   }, []);
