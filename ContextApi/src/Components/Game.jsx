@@ -224,7 +224,7 @@ const leaderboardRef = useRef(null);
 
 
   return (
-    <div className="min-h-screen bg-gradient-to-b to-gray-300 from-gray-900">
+    <div className="min-h-screen bg-gradient-to-b to-gray-400 from-black">
       <input
   ref={inputRef}
   type="text"
