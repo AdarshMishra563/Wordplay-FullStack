@@ -195,8 +195,19 @@ export default function Game() {
 useEffect(() => {
   inputRef.current?.focus();
 }, []);
+const leaderboardRef = useRef(null);
+ useEffect(() => {
+  const handleClickOutside = (event) => {
+    if (leaderboardRef.current && !leaderboardRef.current.contains(event.target)) {
+      setShowLeaderboard(false);
+    }
+  };
 
- 
+  document.addEventListener('mousedown', handleClickOutside);
+  return () => {
+    document.removeEventListener('mousedown', handleClickOutside);
+  };
+}, []);
 
 
   return (
@@ -285,14 +296,14 @@ useEffect(() => {
     >
       <FaQuestionCircle className="mr-2" /> How to Play
     </button>
-    
+    <div className="relative" ref={leaderboardRef} >
     <button 
       className="flex items-center bg-gray-700 text-white px-3 py-2 rounded-md hover:bg-gray-600 shadow-sm hover:shadow-md transition-shadow"
       onClick={() => setShowLeaderboard(!showLeaderboard)}
     >
       {showLeaderboard ? <FaChevronUp className="mr-2" /> : <FaChevronDown className="mr-2" />}
       Leaderboard
-    </button>
+    </button></div>
     
     <button 
       className="flex items-center bg-blue-600 text-white px-3 py-2 rounded-md hover:bg-blue-700 shadow-sm hover:shadow-md transition-shadow"
