@@ -1,265 +1,417 @@
-import React, {  useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
-import { FaTrophy } from "react-icons/fa";
-import {useNavigate} from "react-router-dom";
+import { FaTrophy, FaCrown, FaChevronDown, FaChevronUp, FaTimes, FaQuestionCircle, FaRedo } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
+const api = async () => {
+  const res = await fetch("https://random-word-api.herokuapp.com/word?number=150&length=5");
+  const info = await res.json();
+  return info;
+};
 
+export default function Game() {
+  const navigate = useNavigate();
+  const [words, setwords] = useState('');
+  const [gameover, setgameover] = useState(false);
+  const [guesses, setguesses] = useState(Array(6).fill(null));
+  const [currentguess, setcurrentguess] = useState('');
+  const [id, setid] = useState({ wins: 0, data: [{ username: "xxxx" }] });
+  const [count, setcount] = useState(0);
+  const [rank, setrank] = useState([]);
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
+  const [showLossModal, setShowLossModal] = useState(false);
+  const [allGuessesUsed, setAllGuessesUsed] = useState(false);
+  const [showHowToPlay, setShowHowToPlay] = useState(false);
 
-const api= async()=>{
-  const res= await fetch( "https://random-word-api.herokuapp.com/word?number=150&length=5")
-   const info= await res.json()
-  
-    
-    return info
-}
-
-  
-
-export default   function Game(){
-  const navigate=useNavigate();
-
-const [name,setname]=useState("xxx")
-const [wins,setwins]=useState(0)
- const [words,setwords]=useState('')
- const[gameover,setgameover]=useState(false)
- const [guesses,setguesses]=useState(Array(6).fill(null))
-const [currentguess,setcurrentguess]=useState('')
-const[info,setinfo]=useState({username:"",wins:""})
-const [id,setid]=useState({wins:0,data:[{username:"xxxx"}]})
-const[count,setcount]=useState(0);
-const [rank,setrank]=useState([])
-const getrank=async ()=>{
-  try{ 
-    const res= await axios.get('https://game-full-stack.onrender.com');
-
-return res;
-  }catch(err){
-    console.log(err)
-  }
-}
-  
-
-
-
-useEffect(()=>{
-  getrank().then((data)=>{ const array =data.data.data;
-    const sortedplayers=array.sort((a, b) => b.wins - a.wins);
-    
-    setrank(sortedplayers);
-  
-
-
-})
-
-  
-    const getUserFromToken = (token) => {
-        try {
-          const decoded = jwtDecode(token);
-          
-          return decoded; // Returns user data like { id: '123', email: 'user@example.com', exp: 1712134123 }
-        } catch (error) {
-          console.error("Invalid Token", error);
-          return null;
-        }
-      };
-      const token = localStorage.getItem("token");
-      const k=getUserFromToken(token);
-      
-    
-    const incrementWinCount = async (_id) => {
-        try {
-    
-            const response = await axios.post("https://game-full-stack.onrender.com/api/auth/start", { _id });
-            setid(response.data)
-            
-        } catch (error) {
-            console.error("Error updating win count:", error);
-        }
-    };
-    incrementWinCount(k.id)
-
-},[count])
-useEffect(()=>{
-  
-    const getUserFromToken = (token) => {
-        try {
-          const decoded = jwtDecode(token);
-          
-          return decoded; // Returns user data like { id: '123', email: 'user@example.com', exp: 1712134123 }
-        } catch (error) {
-          console.error("Invalid Token", error);
-          return null;
-        }
-      };
-      const token = localStorage.getItem("token");
-      const k=getUserFromToken(token);
-      
-    
-    const incrementWinCount = async (_id) => {
-        try {
-    
-            const response = await axios.post("https://game-full-stack.onrender.com/api/auth/userwin", { _id });
-            setid(response.data)
-            
-        } catch (error) {
-            console.error("Error updating win count:", error);
-        }
-    };
-    if(gameover){
-      incrementWinCount(k.id)
-
+  const getrank = async () => {
+    try {
+      const res = await axios.get('https://game-full-stack.onrender.com');
+      return res;
+    } catch (err) {
+      console.log(err);
     }
-    
+  };
 
-      
-      
-       
-       
-      
-     
+  useEffect(() => {
+    getrank().then((data) => {
+      const array = data.data.data;
+      const sortedplayers = array.sort((a, b) => b.wins - a.wins);
+      setrank(sortedplayers);
+    });
 
+    const getUserFromToken = (token) => {
+      try {
+        const decoded = jwtDecode(token);
+        return decoded;
+      } catch (error) {
+        console.error("Invalid Token", error);
+        return null;
+      }
+    };
+    const token = localStorage.getItem("token");
+    const k = getUserFromToken(token);
 
-  
-  
-    
+    const incrementWinCount = async (_id) => {
+      try {
+        const response = await axios.post("https://game-full-stack.onrender.com/api/auth/start", { _id });
+        setid(response.data);
+      } catch (error) {
+        console.error("Error updating win count:", error);
+      }
+    };
+    incrementWinCount(k.id);
+  }, [count]);
+
+  useEffect(() => {
    
-    
-  },[gameover])
- console.log(id.data[0].username)
-
-useEffect(()=>{const handletype=(e)=>{
-  if(gameover){
-    return;
-  }
-  if(gameover){
-    setcount(count+1)
-  }
-  if(e.key==='Enter'){
-    if(currentguess.length !==5){
-      
-      return 
+    const allGuessesFilled = guesses.every(guess => guess !== null);
+    if (allGuessesFilled && !gameover) {
+      setAllGuessesUsed(true);
+      setShowLossModal(true);
     }
-   
+  }, [guesses, gameover]);
 
-    const newGuesses=[...guesses]
-    newGuesses[guesses.findIndex(v=>v==null)]=currentguess
-    setguesses(newGuesses)
-    setcurrentguess('')
-    
-    
+  useEffect(() => {
+    const getUserFromToken = (token) => {
+      try {
+        const decoded = jwtDecode(token);
+        return decoded;
+      } catch (error) {
+        console.error("Invalid Token", error);
+        return null;
+      }
+    };
+    const token = localStorage.getItem("token");
+    const k = getUserFromToken(token);
 
-    const isCorrect=words===currentguess;
-   if(isCorrect){
-    setgameover(true)
-   } 
-       
- 
-  }
+    const incrementWinCount = async (_id) => {
+      try {
+        const response = await axios.post("https://game-full-stack.onrender.com/api/auth/userwin", { _id });
+        setid(response.data);
+      } catch (error) {
+        console.error("Error updating win count:", error);
+      }
+    };
+    if (gameover) {
+      incrementWinCount(k.id);
+    }
+  }, [gameover]);
 
-  if(currentguess.length>=5){
-    return ;
-  }
-const isLetter=e.key.match(/^[a-z]{1}$/)!=null
-if(isLetter){
-setcurrentguess(o=>{ return o+e.key})}
+  useEffect(() => {
+    const handletype = (e) => {
+      if (gameover || allGuessesUsed) {
+        return;
+      }
 
+      if (e.key === 'Enter') {
+        if (currentguess.length !== 5) {
+          return;
+        }
 
-if (e.key === 'Backspace') {
-  setcurrentguess(prev => prev.slice(0, -1)); 
-  return;
-}
+        const newGuesses = [...guesses];
+        newGuesses[guesses.findIndex(v => v == null)] = currentguess;
+        setguesses(newGuesses);
+        setcurrentguess('');
 
+        const isCorrect = words === currentguess;
+        if (isCorrect) {
+          setgameover(true);
+        }
+      }
 
-}
+      if (currentguess.length >= 5) {
+        return;
+      }
+      const isLetter = e.key.match(/^[a-z]{1}$/) != null;
+      if (isLetter) {
+        setcurrentguess(o => { return o + e.key });
+      }
 
-window.addEventListener('keydown',handletype)
-return ()=>window.removeEventListener('keydown',handletype)
+      if (e.key === 'Backspace') {
+        setcurrentguess(prev => prev.slice(0, -1));
+        return;
+      }
+    };
 
+    window.addEventListener('keydown', handletype);
+    return () => window.removeEventListener('keydown', handletype);
+  }, [currentguess, gameover, words, guesses, allGuessesUsed]);
 
+  useEffect(() => {
+    api().then((i) => {
+      const randomword = i[Math.floor(Math.random() * 150)];
+      setwords(randomword);
+      
+    });
+  }, []);
 
-},[currentguess,gameover,words,guesses])
-
-
-
- useEffect(()=>{api().then((i)=>{
-  const randomword=i[Math.floor(Math.random()*150)]
-setwords(randomword)
-
- }
-)
-
-},[])
-   const handleRefresh = () => {
+  const handleRefresh = () => {
     navigate(0);
-  
-}
+  };
 
-return(<>
+  const handleKeyClick = (key) => {
+    if (gameover || allGuessesUsed) return;
+    
+    if (key === 'ENTER') {
+      if (currentguess.length === 5) {
+        const newGuesses = [...guesses];
+        newGuesses[guesses.findIndex(v => v == null)] = currentguess;
+        setguesses(newGuesses);
+        setcurrentguess('');
 
+        const isCorrect = words === currentguess;
+        if (isCorrect) {
+          setgameover(true);
+        }
+      }
+    } else if (key === 'BACK') {
+      setcurrentguess(prev => prev.slice(0, -1));
+    } else if (currentguess.length < 5) {
+      setcurrentguess(prev => prev + key.toLowerCase());
+    }
+  };
 
-<div className="w-full  flex text-center text-2xl text-white capitalize  h-16 justify-center bg-gray-800">!!      {id.data[0].username}  <p className="ml-4 mr-8 text-red-400">    Wins : {id.data[0].wins}</p>   !!       </div>
-  <div className="bg-gray-200"> <button className="border-2 border-black rounded-md bg-blue-200" onClick={handleRefresh} >Restart Game</button></div>
+  const closeLossModal = () => {
+    setShowLossModal(false);
+  };
 
-<div key={"hh"} className=" bg-gray-200 h-screen place-items-center text-3xl  gap-[5px]">
-  !!WordPlay!!
- <div className="relative "> {
-    guesses.map((guess,i)=>{
-      const isCurrentguess=i===guesses.findIndex(v=>v==null)
-      return(<Line className=""
-        guess={isCurrentguess ? currentguess :guess ?? ""}
-        isfinal={!isCurrentguess && guess!=null }
-        words={words}
-        />)
-    })
-  }</div><div className=" absolute  right-0 top-[38%] transform -translate-y-1/2 w-[20%] h-64 bg-gray-300 flex items-center justify-center "> <div className="w-full max-w-md mx-auto p-2 bg-gray-200 border-2 border-gray-400 shadow-md rounded-lg h-[400px] overflow-y-auto">
-  <h2 className="text-black font-bold  text-center mb-4">Leaderboard</h2>
-  <ul>
-    {rank.map((player, index) => (
-      <li key={index} className="border border-gray-800 rounded-md flex justify-between">
-        <span className=" flex  text-xl text-black ">{index+1}. { player.username}  :      {  player.wins}<FaTrophy className="mt-1 ml-1"/> </span>
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-gray-200 to-gray-900">
+      
+      {showLossModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-gray-800 p-6 rounded-lg shadow-xl max-w-md w-full">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-2xl font-bold text-red-500">Game Over</h2>
+              <button 
+                onClick={closeLossModal}
+                className="text-gray-400 hover:text-white"
+              >
+                <FaTimes />
+              </button>
+            </div>
+            <p className="text-white mb-4">You've used all your guesses!</p>
+            <p className="text-xl font-bold text-yellow-400 mb-6">
+              The correct word was: <span className="uppercase">{words}</span>
+            </p>
+            <div className="flex justify-center">
+              <button
+                onClick={handleRefresh}
+                className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center"
+              >
+                <FaRedo className="mr-2" /> Play Again
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+     
+      {showHowToPlay && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-gray-800 p-6 rounded-lg shadow-xl max-w-md w-full">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-2xl font-bold text-blue-400">How to Play</h2>
+              <button 
+                onClick={() => setShowHowToPlay(false)}
+                className="text-gray-400 hover:text-white"
+              >
+                <FaTimes />
+              </button>
+            </div>
+            <div className="text-white space-y-4">
+              <p>1. Type a 5-letter word and press Enter</p>
+              <p>2. Letters in the word but wrong position will turn <span className="bg-yellow-500 text-white px-1">YELLOW</span></p>
+              <p>3. Letters in the correct position will turn <span className="bg-green-500 text-white px-1">GREEN</span></p>
+              <p>4. Guess the word correctly within 6 attempts</p>
+              <div className="flex justify-center mt-4">
+                <button
+                  onClick={() => setShowHowToPlay(false)}
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                >
+                  Got it!
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="w-full flex text-center text-2xl text-white capitalize h-16 justify-center bg-gray-800 items-center">
+        <div className="flex items-center">
+          <FaCrown className="text-yellow-400 mr-2" />
+          {id.data[0].username} 
+          <p className="ml-4 mr-8 text-red-400">Wins: {id.data[0].wins}</p>
+        </div>
+      </div>
+
+      <div className="flex justify-between items-center px-4 mt-4">
+        <button 
+          onClick={() => setShowHowToPlay(true)}
+          className="flex items-center bg-gray-700 text-white px-3 py-2 rounded-md hover:bg-gray-600"
+        >
+          <FaQuestionCircle className="mr-2" /> How to Play
+        </button>
         
-  
-      </li>
-    ))}
-  </ul>
-</div></div>
-<Win gameover={gameover} words={words}
-/>
-  </div> </>
-)}
-function Line({guess,isfinal,words,}){
-  const boxes=[]
-for(let i=0;i<5;i++){
-  const char=guess[i]
+        <div className="flex space-x-4">
+          <button 
+            className="flex items-center bg-gray-700 text-white px-3 py-2 rounded-md hover:bg-gray-600"
+            onClick={() => setShowLeaderboard(!showLeaderboard)}
+          >
+            {showLeaderboard ? <FaChevronUp className="mr-2" /> : <FaChevronDown className="mr-2" />}
+            Leaderboard
+          </button>
+          <button 
+            className="flex items-center bg-blue-600 text-white px-3 py-2 rounded-md hover:bg-blue-700"
+            onClick={handleRefresh}
+          >
+            <FaRedo className="mr-2" /> Restart
+          </button>
+        </div>
+      </div>
 
-  let className=""
-  if(isfinal){
-    if(char===words[i]){
-      className+='bg-green-400'
-    }
-    else
-    if(words.includes(char)){
-      className+='bg-yellow-400'
-    }
-  else{
-    className+='bg-gray-600'
-  }}
- 
-  boxes.push(<div key={i} className={" w-12 h-12 border-2 border-black  place-items-center capitalize md:uppercase "+className}><div>{char}</div></div>)
+      <div className="flex flex-col items-center mt-8">
+        <h1 className="text-4xl font-bold text-gray-800 mb-8">WordPlay</h1>
+        
+        {showLeaderboard && (
+          <div className="w-full max-w-md mb-8 bg-gray-100 border-2 border-gray-400 shadow-lg rounded-lg overflow-hidden">
+            <div className="bg-gray-800 text-white p-3 font-bold text-center">
+              Leaderboard
+            </div>
+            <ul className="max-h-60 overflow-y-auto">
+              {rank.map((player, index) => (
+                <li 
+                  key={index} 
+                  className={`p-3 border-b border-gray-300 flex justify-between items-center ${
+                    index % 2 === 0 ? 'bg-gray-100' : 'bg-gray-200'
+                  }`}
+                >
+                  <span className="flex items-center">
+                    <span className="font-bold w-6 text-center">
+                      {index + 1}.
+                    </span>
+                    <span className="ml-2">{player.username}</span>
+                  </span>
+                  <span className="flex items-center">
+                    <span className="mr-1">{player.wins}</span>
+                    <FaTrophy className="text-yellow-500" />
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
 
+        <div className="relative">
+          {guesses.map((guess, i) => {
+            const isCurrentguess = i === guesses.findIndex(v => v == null);
+            return (
+              <Line
+                key={i}
+                guess={isCurrentguess ? currentguess : guess ?? ""}
+                isfinal={!isCurrentguess && guess != null}
+                words={words}
+              />
+            );
+          })}
+        </div>
+        
+        <Win gameover={gameover} words={words} />
+        
+       
+        <div className="fixed bottom-0 left-0 right-0 bg-gray-800 p-4 shadow-lg">
+          <div className="flex justify-center mb-1">
+            {'QWERTYUIOP'.split('').map((key) => (
+              <button
+                key={key}
+                onClick={() => handleKeyClick(key)}
+                className="m-1 p-3 bg-gray-700 text-white border border-gray-600 rounded-md hover:bg-gray-600 active:bg-gray-500 transition-colors"
+                disabled={gameover || allGuessesUsed}
+              >
+                {key}
+              </button>
+            ))}
+          </div>
+          <div className="flex justify-center mb-1">
+            {'ASDFGHJKL'.split('').map((key) => (
+              <button
+                key={key}
+                onClick={() => handleKeyClick(key)}
+                className="m-1 p-3 bg-gray-700 text-white border border-gray-600 rounded-md hover:bg-gray-600 active:bg-gray-500 transition-colors"
+                disabled={gameover || allGuessesUsed}
+              >
+                {key}
+              </button>
+            ))}
+          </div>
+          <div className="flex justify-center">
+            <button
+              onClick={() => handleKeyClick('ENTER')}
+              className="m-1 p-3 bg-blue-600 text-white border border-blue-700 rounded-md hover:bg-blue-700 active:bg-blue-500 transition-colors text-sm"
+              disabled={gameover || allGuessesUsed}
+            >
+              ENTER
+            </button>
+            {'ZXCVBNM'.split('').map((key) => (
+              <button
+                key={key}
+                onClick={() => handleKeyClick(key)}
+                className="m-1 p-3 bg-gray-700 text-white border border-gray-600 rounded-md hover:bg-gray-600 active:bg-gray-500 transition-colors"
+                disabled={gameover || allGuessesUsed}
+              >
+                {key}
+              </button>
+            ))}
+            <button
+              onClick={() => handleKeyClick('BACK')}
+              className="m-1 p-3 bg-red-600 text-white border border-red-700 rounded-md hover:bg-red-700 active:bg-red-500 transition-colors"
+              disabled={gameover || allGuessesUsed}
+            >
+              ⌫
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
 
+function Line({ guess, isfinal, words }) {
+  const boxes = [];
+  for (let i = 0; i < 5; i++) {
+    const char = guess[i];
+    let className = "flex items-center justify-center w-12 h-12 border-2 font-bold text-xl ";
+    
+    if (isfinal) {
+      if (char === words[i]) {
+        className += 'bg-green-500 text-white border-green-600';
+      } else if (words.includes(char)) {
+        className += 'bg-yellow-500 text-white border-yellow-600';
+      } else {
+        className += 'bg-gray-600 text-white border-gray-700';
+      }
+    } else {
+      className += 'border-gray-400 bg-white';
+    }
 
+    boxes.push(
+      <div key={i} className={className}>
+        {char}
+      </div>
+    );
+  }
 
-  return<div className=" mt-1 flex gap-[5px]">
-    {boxes}
-
-  </div>
+  return <div className="my-1 flex gap-2">{boxes}</div>;
 }
-function Win({gameover}){
- 
- 
- if(gameover){
-  return <div className="bg-pink-600 text-white mt-4 ml-2 rounded-lg text-4xl w-22 ">!!!!YouWin!!!!</div>}
+
+function Win({ gameover, words }) {
+  if (gameover) {
+    return (
+      <div className="mt-6 p-4 bg-green-600 text-white rounded-lg text-2xl font-bold animate-bounce">
+        You Win! The word was: {words.toUpperCase()}
+      </div>
+    );
+  }
+  return null;
 }

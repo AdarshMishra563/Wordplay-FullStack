@@ -8,4 +8,59 @@
       #d1d5db 100%
     );
   }
-  
+  body {
+  margin: 0;
+  overflow: hidden;
+  background: #222;
+}
+
+.container {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  background: #222;
+}
+
+.tub-shape {
+  width: 450px;
+  height: 100vh;
+  background: linear-gradient(to bottom, #f3f4f6, #1f2937);
+  clip-path: polygon(100% 1000%, 0% 1000%, 0% 0%, 100% 20%);
+}
+
+.content {
+  flex: 1;
+  padding: 10px;
+  color: #fff;
+  margin-top: 20;
+}
+@keyframes blink {
+ 0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 0%;
+  }
+  100% {
+    background-position: 0% 0%;
+  }
+}
+
+@keyframes shine {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+@media (max-width: 786px) {
+  .animated-text {
+    font-size: 2.5rem;
+    background-size: 200% 200%;
+    animation: shine 15s linear infinite;
+  }
+}
