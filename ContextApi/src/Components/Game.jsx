@@ -3,6 +3,21 @@ import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import { FaTrophy, FaCrown, FaChevronDown, FaChevronUp, FaTimes, FaQuestionCircle, FaRedo } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+const fiveLetterWords = [
+  "apple", "brain", "crisp", "dwarf", "eagle", 
+  "flame", "globe", "happy", "igloo", "jolly",
+  "koala", "lemon", "mango", "noble", "olive",
+  "peach", "queen", "robin", "sunny", "tiger",
+  "umbra", "vivid", "whale", "xenon", "yacht",
+  "zebra", "acute", "baker", "crane", "dance",
+  "earth", "fable", "grape", "haste", "inbox",
+  "jumpy", "kneel", "latch", "mirth", "nymph",
+  "otter", "prism", "quilt", "rover", "swoop",
+  "tulip", "udder", "vowel", "wrist", "xerox"
+];
+
+
+const randomlocal = fiveLetterWords[Math.floor(Math.random() * fiveLetterWords.length)];
 
 const api = async () => {
   const res = await fetch("https://random-word-api.herokuapp.com/word?number=150&length=5");
@@ -156,9 +171,15 @@ export default function Game() {
   useEffect(() => {
     api().then((i) => {
       const randomword = i[Math.floor(Math.random() * 150)];
-      setwords(randomword);
+      setwords(randomword)
+
+     
       
-    });
+    }).catch(() => {
+      
+     setwords(randomlocal)
+
+    });;
   }, []);
 
   const handleRefresh = () => {
@@ -218,7 +239,7 @@ const leaderboardRef = useRef(null);
   className="opacity-0 absolute"
   value={currentguess}
   onChange={() => {}}
-  onKeyDown={(e) => handletype(e)}
+  
 />
 
       {showLossModal && (
@@ -280,41 +301,43 @@ const leaderboardRef = useRef(null);
         </div>
       )}
 
-        <div className="w-full flex justify-between items-center px-4 py-3 bg-gray-800 text-white">
+     <div className="w-full flex flex-col sm:flex-row justify-between items-center px-2 sm:px-4 py-2 bg-gray-800 text-white">
   
-  <div className="flex items-center text-xl capitalize">
+  <div className="flex items-center text-lg sm:text-xl capitalize mb-2 sm:mb-0">
     <FaCrown className="text-yellow-400 mr-2" />
-    {id.data[0].username} 
-    <p className="ml-4 text-red-400">Wins: {id.data[0].wins}</p>
+    <span className="truncate max-w-[120px] sm:max-w-none">{id.data[0].username}</span> 
+    <p className="ml-2 sm:ml-4 text-red-400">Wins: {id.data[0].wins}</p>
   </div>
 
- 
-  <div className="flex items-center space-x-4">
+  
+  <div className="flex flex-wrap justify-center gap-2 sm:gap-4 w-full sm:w-auto">
     <button 
       onClick={() => setShowHowToPlay(true)}
-      className="flex items-center bg-gray-700 text-white px-3 py-2 rounded-md hover:bg-gray-600 shadow-sm hover:shadow-md transition-shadow"
+      className="flex items-center bg-gray-700 text-white px-2 sm:px-3 py-1 sm:py-2 rounded-md hover:bg-gray-600 shadow-sm hover:shadow-md transition-shadow text-sm sm:text-base"
     >
-      <FaQuestionCircle className="mr-2" /> How to Play
+      <FaQuestionCircle className="mr-1 sm:mr-2" /> How to Play
     </button>
-    <div className="relative" ref={leaderboardRef} >
-    <button 
-      className="flex items-center bg-gray-700 text-white px-3 py-2 rounded-md hover:bg-gray-600 shadow-sm hover:shadow-md transition-shadow"
-      onClick={() => setShowLeaderboard(!showLeaderboard)}
-    >
-      {showLeaderboard ? <FaChevronUp className="mr-2" /> : <FaChevronDown className="mr-2" />}
-      Leaderboard
-    </button></div>
+    
+    <div className="relative" ref={leaderboardRef}>
+      <button 
+        className="flex items-center bg-gray-700 text-white px-2 sm:px-3 py-1 sm:py-2 rounded-md hover:bg-gray-600 shadow-sm hover:shadow-md transition-shadow text-sm sm:text-base"
+        onClick={() => setShowLeaderboard(!showLeaderboard)}
+      >
+        {showLeaderboard ? <FaChevronUp className="mr-1 sm:mr-2" /> : <FaChevronDown className="mr-1 sm:mr-2" />}
+        Leaderboard
+      </button>
+    </div>
     
     <button 
-      className="flex items-center bg-blue-600 text-white px-3 py-2 rounded-md hover:bg-blue-700 shadow-sm hover:shadow-md transition-shadow"
+      className="flex items-center bg-blue-600 text-white px-2 sm:px-3 py-1 sm:py-2 rounded-md hover:bg-blue-700 shadow-sm hover:shadow-md transition-shadow text-sm sm:text-base"
       onClick={handleRefresh}
     >
-      <FaRedo className="mr-2" /> Restart
+      <FaRedo className="mr-1 sm:mr-2" /> Restart
     </button>
     
     <button 
       onClick={handleLogout}
-      className="bg-red-600 hover:bg-red-700 text-white font-bold px-3 py-2 rounded-md text-sm shadow-sm hover:shadow-md transition-shadow"
+      className="bg-red-600 hover:bg-red-700 text-white font-bold px-2 sm:px-3 py-1 sm:py-2 rounded-md text-xs sm:text-sm shadow-sm hover:shadow-md transition-shadow"
     >
       Logout
     </button>
@@ -441,7 +464,7 @@ function Line({ guess, isfinal, words }) {
         className += 'bg-gray-600 text-white border-gray-700';
       }
     } else {
-      className += 'border-gray-400 bg-white';
+      className += 'border-gray-400 bg-gray-300 ';
     }
 
     boxes.push(
