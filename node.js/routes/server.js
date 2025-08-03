@@ -31,13 +31,7 @@ app.get('/',async (req,res)=>{
 
 app.listen(PORT,console.log(`started at port${PORT}`))
 
-// 
 
 
 
-// const ProductModel= mongoose.model('users',ProductSch);
-// // let data=new ProductModel({name:"ku8888yutfc",price:77,term:"hyhhhh"});
-// // let result=await data.save();
-// // let result =await ProductModel.find() ;
-// // console.log(result)
-// return ProductModel;
+
