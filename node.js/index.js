@@ -19,7 +19,7 @@ app.get('/',async (req,res)=>{
  
     const result =  await Model.find();
     
-    console.log(result)
+    
     res.status(200).json({ data: result, message: 'Data received successfully  ' });
 
 })
